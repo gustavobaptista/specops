@@ -110,10 +110,11 @@ See [`docs/methodology.md`](docs/methodology.md) for the philosophy and
 
 ## Status
 
-`v0.1.0` — early. The `architect` agent and the `feature-pipeline` workflow are
-fully config-driven. Remaining squad roles (`discovery`, `planner`, `qa`,
-`reviewer`, `auditor`, implementers) are being ported from the original BeerXP
-system to the same config-driven pattern.
+`v0.1.0`. The full squad is ported and config-driven: `discovery`, `architect`,
+`planner`, `implementer`, `qa`, `reviewer`, `auditor` — each reads the project
+profile at runtime and assumes no stack. The `feature-pipeline` workflow orchestrates
+them. Still to add: the CI templates (`reviewer.yml`, `validate.yml`) under
+`templates/ci/`, and broader real-world testing across stacks.
 
 ## License
 

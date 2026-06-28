@@ -1,8 +1,10 @@
 # Porting Guide — finishing the extraction
 
-This scaffold ships the **engine** and one fully-converted agent (`architect`)
-plus the config-driven `feature-pipeline`. The remaining agents still live in the
-original BeerXP repo and need the same treatment. This guide is the recipe.
+The full squad has now been ported from BeerXP and is config-driven (`discovery`,
+`architect`, `planner`, `implementer`, `qa`, `reviewer`, `auditor`). This guide
+documents the recipe that was used — keep it as the reference for porting any
+*additional* agents (e.g. an incident-investigator or deploy-guardian) into the
+same pattern.
 
 > **Renaming as you port.** The squad uses a role/persona taxonomy, so each BeerXP
 > agent gets a new name as you bring it over:
