@@ -6,8 +6,8 @@
 > loop, and persistent per-agent memory.
 
 ```
-product-discovery → spec-generator → task-generator → implementers (parallel) → qa-validator → PRs → pr-reviewer loop
-       brief.md           spec.md          tasks.md      one per subproject       gate (retry)         auto-fix (retry)
+discovery → architect → planner → implementers (parallel) → qa → PRs → reviewer loop
+ brief.md     spec.md     tasks.md    one per subproject       gate         auto-fix (retry)
 ```
 
 Everything that is project-specific — your stack, paths, naming, branches, gates —
@@ -24,8 +24,8 @@ parts that make it hold up on real teams:
 |---|---|
 | **Parallel implementers** | One agent per subproject, isolated in its own git worktree — no staging-area collisions. |
 | **Verifiable gates** | Each phase has a pass/fail gate (spec sections present, tasks detected, QA approved) — not self-assigned scores. |
-| **QA retry loop** | `qa-validator` traces every business rule in the spec to its implementation + test. Gaps bounce back to only the affected implementer. |
-| **Automated review loop** | After PRs open, it waits for `pr-reviewer`, extracts blockers, and dispatches surgical fixes to the existing branch — up to N cycles. |
+| **QA retry loop** | `qa` traces every business rule in the spec to its implementation + test. Gaps bounce back to only the affected implementer. |
+| **Automated review loop** | After PRs open, it waits for `reviewer`, extracts blockers, and dispatches surgical fixes to the existing branch — up to N cycles. |
 | **Per-agent memory** | Each agent accumulates project-specific lessons across sessions via a sync hook. |
 | **Config-driven** | Zero stack assumptions in the agents. One profile file drives everything. |
 
@@ -67,8 +67,8 @@ Just describe what you want, in your own words:
 
 > "Spec out a wishlist feature, then build it across backend and app."
 
-Claude reads the profile and invokes the individual agents (`spec-generator`,
-`task-generator`, the implementers…) as needed. No command, no fixed flow — full
+Claude reads the profile and invokes the individual agents (`architect`,
+`planner`, the implementers…) as needed. No command, no fixed flow — full
 flexibility, and you can redirect at any step.
 
 ### 2. Dynamic orchestration — `/sdd-run <slug | description>`
@@ -89,7 +89,7 @@ the slug so you never hand-write that call.
 > intermediate results. Same agents, same gates — different driver. See
 > [`docs/methodology.md`](docs/methodology.md#deterministic-vs-dynamic).
 
-All three start from `/product-discovery` (optional — generates the `brief.md`) and end
+All three start from `/discovery` (optional — generates the `brief.md`) and end
 at merged-ready PRs, stopping only for the final human approval.
 
 ## Anatomy
@@ -110,10 +110,10 @@ See [`docs/methodology.md`](docs/methodology.md) for the philosophy and
 
 ## Status
 
-`v0.1.0` — early. The `spec-generator` agent and the `feature-pipeline` workflow are
-fully config-driven. Remaining agents (`product-discovery`, `task-generator`,
-`qa-validator`, `pr-reviewer`, `security-auditor`, implementers) are being ported
-from the original BeerXP system to the same config-driven pattern.
+`v0.1.0` — early. The `architect` agent and the `feature-pipeline` workflow are
+fully config-driven. Remaining squad roles (`discovery`, `planner`, `qa`,
+`reviewer`, `auditor`, implementers) are being ported from the original BeerXP
+system to the same config-driven pattern.
 
 ## License
 

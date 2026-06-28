@@ -72,11 +72,11 @@ When the three conflict, use this hierarchy:
 ## Feature Development Workflow
 
 ```
-product-discovery → spec-generator → task-generator → implementers (parallel)
-                                                            ↓
-                                                       qa-validator
-                                                            ↓
-                                                    human review (PRs)
+discovery → architect → planner → implementers (parallel)
+                                        ↓
+                                       qa
+                                        ↓
+                                human review (PRs)
 ```
 
 Specs live in `<specs-dir>/YYYY-MM-DD-feature-slug/`:

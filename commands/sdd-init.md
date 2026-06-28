@@ -32,6 +32,6 @@ spec-driven pipeline in the current repository by producing two files:
 4. **Confirm next steps** with the user:
    - Review `.claude/project-profile.md` and `.claude/constitution.md`
    - Optionally copy the CI templates from `templates/ci/` into `.github/workflows/`
-   - Run a feature: `product-discovery` → then the `feature-pipeline` workflow with `{ specDir: "docs/specs/<date>-<slug>" }`
+   - Run a feature: `/discovery` → then `/sdd-run <slug>` (dynamic) or `/sdd-feature <slug>` (deterministic)
 
 Never invent stack facts. If unsure, ask. The whole system depends on this profile being correct.

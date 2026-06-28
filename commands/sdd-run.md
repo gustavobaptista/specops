@@ -23,10 +23,10 @@ if it's a freeform description with no directory yet, propose a `YYYY-MM-DD-slug
 and confirm). Then inspect what exists and **decide adaptively** — do not run phases
 that are already done:
 
-- No `brief.md` and the request is fuzzy → run `product-discovery` first. If the
+- No `brief.md` and the request is fuzzy → run `discovery` first. If the
   "what/why" is already clear, skip it.
-- No `spec.md` (or missing required sections) → run `spec-generator`. Otherwise reuse it.
-- No `tasks.md` → run `task-generator`. If tasks exist, read their ✅/🔄/⬜ status and
+- No `spec.md` (or missing required sections) → run `architect`. Otherwise reuse it.
+- No `tasks.md` → run `planner`. If tasks exist, read their ✅/🔄/⬜ status and
   resume from where they stopped.
 
 State your plan in one or two lines before acting, so the user can redirect you.
@@ -42,7 +42,7 @@ If only one subproject is affected, just run one — don't fan out for the sake 
 
 ## Step 3 — QA gate (loop until clean or clearly stuck)
 
-Run `qa-validator`. If it reports gaps, relaunch **only** the affected implementers with
+Run `qa`. If it reports gaps, relaunch **only** the affected implementers with
 the exact gaps, then re-validate. Keep looping while progress is being made; stop and ask
 the user if two rounds make no progress (don't loop forever — that's the dynamic
 counterpart to the script's hard retry cap).
@@ -50,7 +50,7 @@ counterpart to the script's hard retry cap).
 ## Step 4 — PRs and review loop
 
 Open one PR per subproject to `develop` (per the profile's GitFlow). Then wait for
-`pr-reviewer` on each, extract blockers, and dispatch surgical fixes to the existing
+`reviewer` on each, extract blockers, and dispatch surgical fixes to the existing
 branch. Re-check until clear or until further cycles stop helping — then hand off to the
 user for manual approval.
 

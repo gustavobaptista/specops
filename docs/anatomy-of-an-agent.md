@@ -1,16 +1,20 @@
 # Anatomy of an agent
 
-Every process agent in this squad follows the same shape. Use `spec-generator.md` as
+Every process agent in this squad follows the same shape. Use `architect.md` as
 the canonical reference and this as the checklist.
+
+> Naming: agents are **personas/roles** (`discovery`, `architect`, `planner`,
+> `implementer`, `qa`, `reviewer`, `auditor`) — a single namespace of "who".
+> Slash commands are the separate "what you do" namespace (`/sdd-init`, `/sdd-run`).
 
 ## Frontmatter
 
 ```yaml
 ---
-name: spec-generator           # kebab-case, unique
+name: architect                # role/persona, kebab-case, unique
 description: >                  # this is the ROUTER — be precise about WHEN to activate
-  Turns a feature idea into a spec. Activate when the user asks to specify/plan a
-  feature before implementation. Stack-agnostic: reads the project profile at runtime.
+  The squad's architect. Turns a feature idea into a spec. Activate when the user asks
+  to specify/plan a feature before implementation. Stack-agnostic: reads the profile.
 tools: Read, Glob, Grep, Write # least privilege — only what the job needs
 model: opus                    # opus for design/judgment, smaller for mechanical work
 memory: project                # opt into the per-agent memory directory

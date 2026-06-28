@@ -98,8 +98,8 @@ Is this a monorepo with multiple subprojects, or a single project?
 
 Each feature lives in `<specs-dir>/YYYY-MM-DD-feature-slug/`:
 
-- `brief.md` — product discovery, business language (from `product-discovery`)
-- `spec.md` — the what & why, technical (from `spec-generator`)
-- `tasks.md` — traceable tasks with IDs (from `task-generator`)
+- `brief.md` — product discovery, business language (from `discovery`)
+- `spec.md` — the what & why, technical (from `architect`)
+- `tasks.md` — traceable tasks with IDs (from `planner`)
 
 Reference spec to mirror the format: `<path to a good existing spec, if any>`

@@ -1,28 +1,42 @@
 # Methodology
 
-spec-driven-squad turns a fuzzy idea into merged-ready PRs through a chain of
-specialized agents, each with one job and a verifiable handoff.
+spec-driven-squad turns a fuzzy idea into merged-ready PRs through a **squad of
+specialized agents**, each a role with one job and a verifiable handoff. The names
+are personas, not phases — the slash commands (verbs) are a separate namespace.
 
-## The chain
+## The squad
 
-1. **product-discovery** *(optional)* — interviews the PO 100% in business language
+| Role | Produces / does | Maps to artifact |
+|---|---|---|
+| **discovery** | interviews the PO in business language | `brief.md` |
+| **architect** | designs the technical spec | `spec.md` |
+| **planner** | breaks the spec into atomic tasks | `tasks.md` |
+| **implementer** (×N) | builds one subproject | code + tests |
+| **qa** | validates every business rule has impl + test | gate verdict |
+| **reviewer** | reviews each PR, posts blockers | PR review |
+| **auditor** | security audit (deps, rules, secrets) | audit report |
+
+1. **discovery** *(optional)* — interviews the PO 100% in business language
    (never technology) and produces `brief.md`. Use it when the "what" and "why" are
-   still fuzzy. Skip it when they're clear and start at the spec.
-2. **spec-generator** — translates the brief into a technical `spec.md`: overview,
+   still fuzzy. Skip it when they're clear and start at the architect.
+2. **architect** — translates the brief into a technical `spec.md`: overview,
    scope, user flow, architecture, API contracts, security. The *what & why*, not tasks.
-3. **task-generator** — breaks the spec into atomic, traceable `tasks.md` entries with
+3. **planner** — breaks the spec into atomic, traceable `tasks.md` entries with
    IDs (prefix per subproject), `[P]` parallelism markers, concrete file paths, and
    explicit dependencies.
 4. **implementers** (parallel) — one per subproject, each isolated in its own git
    worktree. They mark task status (⬜ → 🔄 → ✅) so the pipeline can resume.
-5. **qa-validator** — the gate. Traces every business rule in the spec to its
-   implementation *and* a behavior test. Rejections bounce back to only the affected
-   implementer, with the exact gap.
-6. **pr-reviewer** — runs automatically on each PR (GitHub Action). Detects the
+5. **qa** — the gate. Traces every business rule in the spec to its implementation
+   *and* a behavior test. Rejections bounce back to only the affected implementer,
+   with the exact gap.
+6. **reviewer** — runs automatically on each PR (GitHub Action). Detects the
    subproject from the diff, applies that subproject's rules, and posts a structured
    review with machine-readable blockers.
 7. **review loop** — the orchestrator reads the review, dispatches surgical fixes to
    the existing branch, and re-checks — up to N cycles.
+
+> **auditor** sits outside the linear chain: run it on demand before staging/prod
+> releases or when dependency scans flag something.
 
 ## Two principles that make it work
 

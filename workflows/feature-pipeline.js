@@ -9,7 +9,7 @@ export const meta = {
     { title: 'Implementation', detail: 'Implementers run in parallel (one per subproject)' },
     { title: 'QA',             detail: 'Validate business rules (up to 2 attempts)' },
     { title: 'PR',             detail: 'Open Pull Requests to develop' },
-    { title: 'Review',         detail: 'Wait for pr-reviewer and fix blockers (up to 3 cycles)' },
+    { title: 'Review',         detail: 'Wait for reviewer and fix blockers (up to 3 cycles)' },
   ],
 }
 
@@ -109,7 +109,7 @@ if (!preflight) throw new Error('Preflight failed — check the directory exists
 if (!preflight.hasBrief && !preflight.specExists) {
   throw new Error(
     `No brief.md or spec.md found in ${specDir}.\n` +
-    'Run product-discovery first to generate brief.md.'
+    'Run discovery first to generate brief.md.'
   )
 }
 
@@ -118,13 +118,13 @@ log(`Feature: ${preflight.featureTitle || specDir}`)
 // ─── GATE 2 — Spec ───────────────────────────────────────────────────────────────
 if (!preflight.specExists || !preflight.specComplete) {
   phase('Spec')
-  log('Generating spec.md via spec-generator...')
+  log('Generating spec.md via architect...')
 
   const specResult = await agent(
     `Generate the spec for the feature in: ${specDir}/brief.md\nSave spec.md to ${specDir}/spec.md`,
-    { label: 'spec-generator', phase: 'Spec', agentType: 'spec-generator' }
+    { label: 'architect', phase: 'Spec', agentType: 'architect' }
   )
-  if (!specResult) throw new Error('spec-generator failed — check brief.md.')
+  if (!specResult) throw new Error('architect failed — check brief.md.')
 
   const specCheck = await agent(`
 Read ${specDir}/spec.md and verify it contains ALL sections:
@@ -155,13 +155,13 @@ let subprojects = (preflight.subprojects || []).filter(k => ALL_KEYS.includes(k)
 
 if (!preflight.tasksExist || !preflight.tasksComplete) {
   phase('Tasks')
-  log('Generating tasks.md via task-generator...')
+  log('Generating tasks.md via planner...')
 
   const taskResult = await agent(
     `Generate the tasks from the spec: ${specDir}/spec.md`,
-    { label: 'task-generator', phase: 'Tasks', agentType: 'task-generator' }
+    { label: 'planner', phase: 'Tasks', agentType: 'planner' }
   )
-  if (!taskResult) throw new Error('task-generator failed — check spec.md.')
+  if (!taskResult) throw new Error('planner failed — check spec.md.')
 
   const prefixList = ALL_KEYS.map(k => `- ${k}: prefix ${SP[k].prefix} (e.g. ${SP[k].prefix}0-001)`).join('\n')
   const tasksCheck = await agent(`
@@ -324,10 +324,10 @@ while (!qaApproved && qaAttempt < MAX_QA_RETRIES) {
 
   const qaResult = await agent(
     `Validate the feature delivery: ${specDir}/\n\nReport gaps per subproject in gapsBySubproject (keyed by subproject key). If approved, gapsBySubproject must be empty.`,
-    { label: `qa-${qaAttempt}`, phase: 'QA', agentType: 'qa-validator', schema: QA_SCHEMA }
+    { label: `qa-${qaAttempt}`, phase: 'QA', agentType: 'qa', schema: QA_SCHEMA }
   )
 
-  if (!qaResult) { log('⚠️ qa-validator returned nothing — aborting QA loop'); break }
+  if (!qaResult) { log('⚠️ qa returned nothing — aborting QA loop'); break }
 
   if (qaResult.approved) {
     qaApproved = true
@@ -395,7 +395,7 @@ const REVIEW_CHECK_SCHEMA = {
 let reviewAllClear = false
 
 for (let cycle = 1; cycle <= MAX_REVIEW_CYCLES; cycle++) {
-  log(`Review — waiting for pr-reviewer on ${openedPRs.length} PR(s)... (cycle ${cycle}/${MAX_REVIEW_CYCLES})`)
+  log(`Review — waiting for reviewer on ${openedPRs.length} PR(s)... (cycle ${cycle}/${MAX_REVIEW_CYCLES})`)
 
   const reviewChecks = await parallel(openedPRs.map(pr => () =>
     agent(`
