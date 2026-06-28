@@ -36,6 +36,33 @@ No agent hardcodes a stack. They read `.claude/project-profile.md` at runtime. T
 the single change that makes the same squad work across a Flutter+Firebase monorepo and
 a single Rust binary. When you change stacks, you change the profile — not seven agents.
 
+## Deterministic vs. dynamic
+
+The same squad can be driven three ways. They share the agents and the gates; they
+differ only in who holds the control flow.
+
+| | Conversational | Dynamic (`/sdd-run`) | Deterministic (`/sdd-feature`) |
+|---|---|---|---|
+| Control flow | You, ad hoc | The model, adaptively | A JS script, fixed |
+| Adapts to feature shape | Fully | Yes (skips/loops as needed) | Only via declared gates |
+| Reproducible run | No | Roughly | Yes |
+| Resumable after a crash | No | Partially | Yes (cached agent results) |
+| Best for | Exploration, one-offs | Irregular features, reacting to results | Regular features, CI, hands-off |
+
+**Why keep the deterministic script at all, if the model can orchestrate dynamically?**
+Because predictability is a feature. A script gives you the same phases in the same order
+every time, bounded retry loops, and resume-after-crash (re-run and unchanged steps return
+cached results). That's what you want in CI or for a feature you'll run the same way twice.
+
+**Why keep the dynamic mode, if the script is reproducible?** Because real features are
+irregular. A script can't decide that *this* spec needs a third QA round, or that only the
+admin subproject is affected, or that the brief already answers everything so discovery
+should be skipped. The model can. Use dynamic when reacting to intermediate results matters
+more than reproducing the run.
+
+Rule of thumb: **explore dynamically, ship deterministically.** Many teams use `/sdd-run`
+while a feature is taking shape, then `/sdd-feature` once the spec is stable.
+
 ## Memory
 
 Each agent has a memory directory. Lessons learned ("this datastore quirk bit us",

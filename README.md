@@ -56,17 +56,41 @@ as a GitHub template, or copy from [`templates/`](templates/):
 - [`templates/constitution.template.md`](templates/constitution.template.md) → `.claude/constitution.md`
 - [`templates/ci/`](templates/ci/) → `.github/workflows/`
 
-## Run a feature
+## Run a feature — three ways
 
-```
-/product-discovery     # optional — generates docs/specs/<date>-<slug>/brief.md
-/sdd-feature <slug>    # runs the whole pipeline for that feature
-```
+The slash commands are a convenience, **not a requirement**. The squad is just a set of
+agents reading a shared profile; you can drive them however you like. Pick by how much
+control vs. automation you want:
 
-`/sdd-feature` resolves the slug to its spec directory and launches the
-`feature-pipeline` workflow for you — no need to hand-write a `Workflow({...})` call.
-Pass a bare slug, a full path, or nothing (it lists features and asks). The pipeline
-takes it from brief → merged-ready PRs, stopping only for the final human approval.
+### 1. Conversational (most independent)
+Just describe what you want, in your own words:
+
+> "Spec out a wishlist feature, then build it across backend and app."
+
+Claude reads the profile and invokes the individual agents (`spec-generator`,
+`task-generator`, the implementers…) as needed. No command, no fixed flow — full
+flexibility, and you can redirect at any step.
+
+### 2. Dynamic orchestration — `/sdd-run <slug | description>`
+A **model-driven** orchestrator: it inspects the feature's current state and *decides*
+the control flow — skips discovery if a brief exists, runs one implementer if only one
+subproject is affected, loops QA while it's making progress, asks you at real forks.
+Adaptive, good for irregular or exploratory features.
+
+### 3. Deterministic workflow — `/sdd-feature <slug>`
+Launches the `feature-pipeline` script: fixed gates, bounded retry loops (QA ≤2,
+review ≤3), **resumable after a crash**, reproducible. Best for regular features,
+hands-off runs, and CI. Under the hood it's
+`Workflow({ name: 'feature-pipeline', args: { specDir } })` — the command just resolves
+the slug so you never hand-write that call.
+
+> **Deterministic vs. dynamic:** the script trades adaptability for predictability and
+> resumability; the orchestrator trades reproducibility for the ability to react to
+> intermediate results. Same agents, same gates — different driver. See
+> [`docs/methodology.md`](docs/methodology.md#deterministic-vs-dynamic).
+
+All three start from `/product-discovery` (optional — generates the `brief.md`) and end
+at merged-ready PRs, stopping only for the final human approval.
 
 ## Anatomy
 
