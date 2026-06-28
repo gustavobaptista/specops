@@ -103,3 +103,61 @@ Each feature lives in `<specs-dir>/YYYY-MM-DD-feature-slug/`:
 - `tasks.md` — traceable tasks with IDs (from `planner`)
 
 Reference spec to mirror the format: `<path to a good existing spec, if any>`
+
+---
+
+## Operations (for the `investigator` & `guardian` roles)
+
+> **Optional.** Only fill this in if you use the operational agents. The build
+> pipeline (discovery → … → reviewer) does not need it. These agents reach external
+> systems through whatever MCP servers / CLIs you have connected — name them here so
+> the agents know what to use; they never assume a vendor.
+
+### Observability / logs
+- Provider: `<e.g. Google Cloud Logging, Datadog, CloudWatch, Loki>`
+- How to query (CLI or MCP + example): `<e.g. gcloud logging read '<filter>' --project=<proj> --freshness=5m>`
+- Error filter: `<e.g. severity>=ERROR; resource.type="cloud_run_revision">`
+
+### Analytics
+- Provider: `<e.g. PostHog, Amplitude, GA4>`
+- Access (MCP/CLI + query language): `<e.g. PostHog MCP — HogQL via exec>`
+- Critical events to watch (blast-radius signals): `<e.g. checkout_completed, session_start>`
+
+### Crash reporting
+- Provider: `<e.g. Firebase Crashlytics via BigQuery export, Sentry>`
+- How to query: `<e.g. bq query ... firebase_crashlytics.crashes_*>`
+- Applies to subprojects: `<e.g. the mobile app only>`
+
+### Alerting
+- Channel provider: `<e.g. Slack MCP, PagerDuty>`
+- Primary channel / fallback: `<e.g. #deploys / #general>`
+
+### Deploy targets (per subproject)
+
+| Subproject | CI deploy workflow name | Deploy type | Health check URL |
+|---|---|---|---|
+| backend | `<e.g. Deploy>` | serverless functions | `<endpoint or n/a>` |
+| admin | `<e.g. Web Deploy>` | static hosting | `<https://...>` |
+| app | `<e.g. Android Deploy>` | app store (manual in prod) | n/a |
+
+### Monitoring windows & thresholds (`guardian`)
+
+| Env | Duration | Check interval | Rollback timeout |
+|---|---|---|---|
+| dev | 20 min | 5 min | 10 min |
+| stg | 30 min | 5 min | 15 min |
+| prod | 60 min | 5 min | 20 min |
+
+Anomaly thresholds (tune per project):
+- **Error rate:** current > `max(10, baseline × 5)`
+- **Critical-event drop:** current hour < 60% of previous hour
+- **Critical-event spike:** current hour > 300% of previous hour
+- **Crashes:** > 5 affected devices in a single app version
+- **Health URL:** HTTP ≠ 200
+
+### Rollback strategy
+- Mechanism: `<e.g. revert the merge commit on a hotfix/rollback-* branch → PR to the deploy branch → auto-merge on green CI>`
+- Hard rules: never silent (announce before & after), never a direct commit, never auto-rollback an app-store release (alert only — requires human action).
+
+### Incident reports directory
+- `<e.g. docs/incidents/>`

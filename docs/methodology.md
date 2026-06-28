@@ -35,8 +35,18 @@ are personas, not phases — the slash commands (verbs) are a separate namespace
 7. **review loop** — the orchestrator reads the review, dispatches surgical fixes to
    the existing branch, and re-checks — up to N cycles.
 
-> **auditor** sits outside the linear chain: run it on demand before staging/prod
-> releases or when dependency scans flag something.
+## Operational roles (outside the linear chain)
+
+Three roles act on demand rather than in the build pipeline. They read the profile's
+**Operations** section (observability, analytics, crash reporting, alerting, deploy
+targets, thresholds) and reach external systems through whatever MCP servers / CLIs
+you have connected — they assume no vendor.
+
+| Role | When to run | What it does |
+|---|---|---|
+| **auditor** | before staging/prod releases, or when a dep scan flags something | security audit (deps, secrets, datastore rules, CI config); `audit` and `fix` modes |
+| **investigator** | during a production incident | read-only root-cause investigation across logs/analytics/crashes/deploys; proposes ranked hypotheses; changes nothing in prod |
+| **guardian** | right after a PR deploys | watches CI/CD, monitors the post-deploy window against thresholds, alerts on anomaly, and auto-rolls-back via a hotfix PR if no human responds |
 
 ## Two principles that make it work
 

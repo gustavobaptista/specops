@@ -1,26 +1,30 @@
 # Porting Guide — finishing the extraction
 
-The full squad has now been ported from BeerXP and is config-driven (`discovery`,
-`architect`, `planner`, `implementer`, `qa`, `reviewer`, `auditor`). This guide
+The full squad has now been ported from BeerXP and is config-driven. This guide
 documents the recipe that was used — keep it as the reference for porting any
-*additional* agents (e.g. an incident-investigator or deploy-guardian) into the
-same pattern.
+*additional* agents into the same pattern.
 
-> **Renaming as you port.** The squad uses a role/persona taxonomy, so each BeerXP
-> agent gets a new name as you bring it over:
+> **Renaming map (all ported).** The squad uses a role/persona taxonomy, so each
+> BeerXP agent got a new role name:
 >
 > | BeerXP name | Squad role |
 > |---|---|
 > | `product-discovery` | `discovery` |
-> | `spec-generator` | `architect` *(done)* |
+> | `spec-generator` | `architect` |
 > | `task-generator` | `planner` |
 > | `backend/frontend/admin-implementer` | `implementer` (one generic) |
 > | `qa-validator` | `qa` |
 > | `pr-reviewer` | `reviewer` |
 > | `security-auditor` | `auditor` |
+> | `incident-investigator` | `investigator` |
+> | `deploy-guardian` | `guardian` |
 >
-> Update the `name:` frontmatter and every cross-reference. The `feature-pipeline`
-> workflow already calls the new `agentType` names (`architect`, `planner`, `qa`).
+> Operational agents (`investigator`, `guardian`) additionally read the profile's
+> **Operations** section and discover external integrations (observability, analytics,
+> alerting) at runtime via connected MCP servers — they carry no `mcpServers:`
+> frontmatter so the plugin stays vendor-neutral. Update the `name:` frontmatter and
+> every cross-reference. The `feature-pipeline` workflow calls the new `agentType`
+> names (`architect`, `planner`, `qa`).
 
 ## The conversion recipe (per agent)
 

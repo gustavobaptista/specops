@@ -110,11 +110,14 @@ See [`docs/methodology.md`](docs/methodology.md) for the philosophy and
 
 ## Status
 
-`v0.1.0`. The full squad is ported and config-driven: `discovery`, `architect`,
-`planner`, `implementer`, `qa`, `reviewer`, `auditor` — each reads the project
-profile at runtime and assumes no stack. The `feature-pipeline` workflow orchestrates
-them. Still to add: the CI templates (`reviewer.yml`, `validate.yml`) under
-`templates/ci/`, and broader real-world testing across stacks.
+`v0.1.0`. The full squad is ported and config-driven — each agent reads the project
+profile at runtime and assumes no stack:
+
+- **Build pipeline:** `discovery` → `architect` → `planner` → `implementer` → `qa` → `reviewer`, orchestrated by the `feature-pipeline` workflow.
+- **Operational roles** (on demand): `auditor` (security), `investigator` (incident root-cause, read-only), `guardian` (deploy watch + auto-rollback).
+
+Still to add: the CI templates (`reviewer.yml`, `validate.yml`) under `templates/ci/`,
+and broader real-world testing across stacks.
 
 ## License
 
