@@ -1,0 +1,90 @@
+name: PR Follow-up Capture (agentic)
+
+# spec-driven-squad — FULL automation tier (stage 1 of the review-debt loop).
+# When a PR is MERGED, re-reads the reviewer's review and opens `pr-followup` issues for
+# the suggestions that were NOT applied before merge, so they aren't lost. Those issues
+# feed followup-fix.yml.
+#
+# PREREQUISITE: the labels pr-followup, sev:low, sev:medium, sev:high must exist
+# (create once — see docs/ci-setup.md).
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [develop]
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+# Queue per PR (do NOT cancel in-progress): two concurrent runs could create duplicate
+# issues for the same PR before dedup sees the other.
+concurrency:
+  group: pr-followup-capture-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    name: Capture review follow-ups
+    # Only on real merges, and skip the fixer's own PRs (label automated-fix) to avoid
+    # the capture → fix → capture loop.
+    if: >-
+      github.event.pull_request.merged == true &&
+      !contains(github.event.pull_request.labels.*.name, 'automated-fix')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI_AGENT_MODEL: claude-sonnet-4-6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2
+
+      - name: Open issues for unapplied suggestions
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, subprocess
+          pr   = "${{ github.event.pull_request.number }}"
+          repo = "${{ github.repository }}"
+          model = os.environ["CI_AGENT_MODEL"]
+          prompt = f"""
+          You are the follow-up CAPTURE agent of the spec-driven-squad.
+          Repo: {repo}. Merged PR: #{pr}.
+
+          GOAL: every `reviewer` suggestion that was NOT applied before merge becomes a
+          trackable `pr-followup` issue. No spam — only what was left out.
+
+          1. Read the review:  gh pr view {pr} --repo {repo} --json reviews,comments
+             Find the content whose body starts with "## Code Review 🤖".
+          2. Parse findings TOLERANTLY from the trailing <!-- squad-review --> block
+             (items with fp / sev / blocker / file / line / summary). If there's no block,
+             fall back to the Blockers / Suggestions sections and derive them yourself.
+          3. For each finding, check if it was already resolved in the merged code:
+             gh pr diff {pr} --repo {repo}  → if applied, IGNORE it.
+          4. Dedup (mandatory before creating):
+             gh issue list --repo {repo} --state open --label pr-followup --search "<fp>"
+             → if it already exists, do NOT duplicate.
+          5. Create the issue:
+             gh issue create --repo {repo} --label pr-followup --label sev:<low|medium|high>
+               --title "<short summary> (#{pr})"
+               --body "<self-contained: origin PR + author + link, file/line, rule, suggested
+                        fix, and a trailing HTML dedup marker carrying fp>"
+             Severity: blockers → sev:high; behavior/test suggestions → sev:medium;
+             mechanical (naming, lint) → sev:low.
+             LIMIT: max 10 issues (priority high > medium > low).
+
+          Final report: list issues created, ignored, and dropped by the limit.
+          """
+          subprocess.run(["claude", "--dangerously-skip-permissions", "--model", model, "-p", prompt], check=True)
+          PYEOF

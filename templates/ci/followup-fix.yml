@@ -1,0 +1,108 @@
+name: PR Follow-up Auto-Fix (agentic)
+
+# spec-driven-squad — FULL automation tier (stage 2 of the review-debt loop).
+# Consumes low/medium `pr-followup` issues and opens a fix PR to develop. `sev:high` is
+# NEVER auto-fixed — that stays for human review.
+#
+# PREREQUISITES (see docs/ci-setup.md):
+#   - labels: pr-followup, sev:*, automated-fix, fix-attempted
+#   - Settings → Actions → Workflow permissions → "Allow GitHub Actions to create and
+#     approve pull requests" (otherwise gh pr create from the runner fails)
+#
+# COST LEVERS:
+#   - schedule cron ......... how often it runs (weekly default; was nightly in the origin)
+#   - FIX_SEVERITIES ........ which severities are eligible (low only by default)
+#   - "exit if none" ........ keeps the idle cron cheap (no agent work when backlog empty)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'        # ← cost lever: weekly, Mon 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: 'Issue number to fix (empty = next from backlog)'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: pr-followup-fix
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    name: Auto-fix one follow-up
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI_AGENT_MODEL: claude-sonnet-4-6
+      FIX_SEVERITIES: 'sev:low'        # ← cost lever, e.g. 'sev:low,sev:medium'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The runner has no git identity; the agent makes commits, so set it here.
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2
+
+      - name: Fix one pr-followup issue
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, subprocess
+          repo   = "${{ github.repository }}"
+          forced = "${{ github.event.inputs.issue }}"
+          model  = os.environ["CI_AGENT_MODEL"]
+          sevs   = os.environ["FIX_SEVERITIES"]
+          prompt = f"""
+          You are the follow-up AUTO-FIX agent of the spec-driven-squad.
+          Repo: {repo}. Forced issue (may be empty): "{forced}". Eligible severities: {sevs}.
+
+          GOAL: fix ONE eligible `pr-followup` issue and open a PR to develop. Always work on
+          a NEW branch. NEVER commit directly to develop/staging/main.
+
+          1. Select the issue:
+             - If a forced issue is given, use it (abort if it has sev:high or fix-attempted).
+             - Else list candidates:
+               gh issue list -R {repo} --state open --label pr-followup --json number,title,labels,assignees
+               Discard: sev:high, fix-attempted, assigned, or any already having an open PR
+               (gh pr list -R {repo} --state open --search "Closes #<n>").
+               Keep only severities in [{sevs}]. Prioritize medium > low. Take EXACTLY ONE.
+               If there is no candidate, exit doing nothing (keeps the idle cron cheap).
+          2. Understand & fix:
+             - gh issue view <n> for the path, the violated rule, and the suggested fix.
+             - Read .claude/project-profile.md, .claude/constitution.md, and the subproject's
+               own contributor doc; follow ALL their patterns.
+             - Make ONLY the change described. If it needs an architecture decision, a broad
+               change, or touches >3 files, do NOT fix: comment why on the issue, add the
+               label fix-attempted, and exit.
+          3. Tests are mandatory: every behavior change needs a test. Run the subproject's
+             lint + build + test (commands from the profile). If any fails, do NOT open a PR:
+             comment the error on the issue, add fix-attempted, and exit.
+          4. Open the PR:
+             - Branch fix/<sub>-followup-<n>; commit "fix(<sub>): <summary> (#<n>)".
+             - gh pr create --base develop --label automated-fix
+                 --title "fix(<sub>): <summary> — follow-up #<n>"
+                 --body "Closes #<n>. Auto-generated; passed lint+build+test. Requires human
+                         review + green CI before merge."
+             - Add the label fix-attempted to the issue.
+
+          Final report: which issue you took, what changed, and the PR link — or why nothing was done.
+          """
+          subprocess.run(["claude", "--dangerously-skip-permissions", "--model", model, "-p", prompt], check=True)
+          PYEOF

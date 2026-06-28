@@ -115,9 +115,9 @@ profile at runtime and assumes no stack:
 
 - **Build pipeline:** `discovery` → `architect` → `planner` → `implementer` → `qa` → `reviewer`, orchestrated by the `feature-pipeline` workflow.
 - **Operational roles** (on demand): `auditor` (security), `investigator` (incident root-cause, read-only), `guardian` (deploy watch + auto-rollback).
+- **CI automation** (opt-in, tiered): run the `reviewer` (and optionally a capture + auto-fix loop) in GitHub Actions. Default level `review`. See [`docs/ci-setup.md`](docs/ci-setup.md).
 
-Still to add: the CI templates (`reviewer.yml`, `validate.yml`) under `templates/ci/`,
-and broader real-world testing across stacks.
+Still to add: broader real-world testing across stacks.
 
 ## License
 

@@ -1,0 +1,89 @@
+name: PR Review (agentic)
+
+# spec-driven-squad — agentic PR review. Runs the `reviewer` role on each PR push and
+# posts a structured review with a machine-readable trailer.
+# Automation level: "review" and up. Setup steps: docs/ci-setup.md.
+#
+# COST LEVERS (keep in sync with project-profile "CI / Automation"):
+#   - branches below ........ which base branches trigger a review (fewer = cheaper)
+#   - paths-ignore .......... skip docs-only PRs
+#   - CI_AGENT_MODEL ........ smaller model = cheaper tokens
+#   - draft skip + concurrency cancel = don't pay for drafts or superseded runs
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main, staging]          # ← cost lever: trigger scope
+    paths-ignore:                      # ← cost lever: skip noise
+      - '**/*.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: AI Code Review
+    if: github.event.pull_request.draft == false   # ← cost lever: skip drafts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CI_AGENT_MODEL: claude-sonnet-4-6             # ← cost lever
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # NOTE: anthropics/claude-code-action@beta does NOT fire on pull_request events
+      # ("No trigger found"). We call the Claude Code CLI directly, which has no such
+      # trigger limitation. See docs/ci-setup.md.
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2
+
+      - name: Run reviewer
+        timeout-minutes: 10
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, subprocess
+          pr   = "${{ github.event.pull_request.number }}"
+          repo = "${{ github.repository }}"
+          base = "${{ github.base_ref }}"
+          model = os.environ["CI_AGENT_MODEL"]
+          prompt = f"""
+          You are the `reviewer` role of the spec-driven-squad.
+          Read .claude/agents/reviewer.md and follow it EXACTLY. Also read
+          .claude/project-profile.md and .claude/constitution.md for this project's
+          stack rules and non-negotiables.
+
+          Review PR #{pr} in repo {repo} (base branch: {base}).
+          1. Get the diff:  gh pr diff {pr} --repo {repo}
+          2. Detect the affected subproject(s) from the diff paths (profile subprojects).
+          3. Apply that subproject's required idioms + the constitution's absolutes.
+             Find real bugs and violated patterns.
+          4. Post the review:  gh pr review {pr} --repo {repo} --comment --body '<body>'
+
+          The body MUST follow the reviewer's machine-readable contract:
+          - start with "## Code Review 🤖"
+          - next non-empty line: "### Verdict: " + exactly one of
+            "✅ APPROVED" | "⚠️ APPROVED WITH SUGGESTIONS" | "❌ CHANGES REQUIRED"
+          - end with the <!-- squad-review ... --> trailer listing every finding
+            (fp, sev, blocker, file, line, summary). Omit the trailer if there are none.
+          """
+          subprocess.run(
+              ["claude", "--dangerously-skip-permissions",
+               "--allowedTools", "Bash", "--model", model, "-p", prompt],
+              check=True,
+          )
+          PYEOF

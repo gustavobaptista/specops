@@ -23,15 +23,26 @@ spec-driven pipeline in the current repository by producing two files:
    - GitFlow branches → environments mapping
    - Quality gates (coverage target, required spec sections, definition of done)
    - Non-negotiable product principles and anti-patterns (for the constitution)
+   - **CI automation level** — ask how much to automate in GitHub Actions, noting the
+     cost (Actions minutes + Claude tokens): `off` | `review` (default) | `review+capture`
+     | `full`. Recommend `review`. Record it in the profile's `## CI / Automation` section.
 
 3. **Generate the files** by filling the templates:
    - Read `templates/project-profile.template.md` and `templates/constitution.template.md` from this plugin.
    - Replace every `<placeholder>` with real values. Use **absolute paths** for dirs and implementer defs (the pipeline needs them).
    - For each subproject, also scaffold a stub implementer at `<dir>/.claude/agents/<key>-implementer.md` if one doesn't exist, pointing back at the profile for stack details.
 
-4. **Confirm next steps** with the user:
+4. **Scaffold CI for the chosen level.** Copy only the workflows that match the chosen
+   automation level into `.github/workflows/` (`review` → `reviewer.yml`;
+   `review+capture` → + `followup-capture.yml`; `full` → + `followup-fix.yml`; always
+   offer `validate.yml`). For `off`, skip. Then **print the exact setup checklist** from
+   [`docs/ci-setup.md`](../docs/ci-setup.md) for that level — the secret, permissions,
+   and (for capture/full) the `gh label create` commands and the "Allow Actions to create
+   PRs" setting. The yamls don't work without these.
+
+5. **Confirm next steps** with the user:
    - Review `.claude/project-profile.md` and `.claude/constitution.md`
-   - Optionally copy the CI templates from `templates/ci/` into `.github/workflows/`
+   - Complete the CI checklist printed in step 4 (if not `off`)
    - Run a feature: `/discovery` → then `/sdd-run <slug>` (dynamic) or `/sdd-feature <slug>` (deterministic)
 
 Never invent stack facts. If unsure, ask. The whole system depends on this profile being correct.

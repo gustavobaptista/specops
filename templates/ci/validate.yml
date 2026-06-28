@@ -1,0 +1,44 @@
+name: Validate (CI)
+
+# spec-driven-squad — PLAIN CI. This is NOT agentic: ordinary lint / build / test.
+# It carries no Claude/token cost — it's here so the repo has a sane gate out of the box.
+# Fill in YOUR stack's commands per subproject (or let /sdd-init generate it from the
+# project-profile). Delete the subprojects you don't have; add a job per subproject for
+# clean parallelism, or use a matrix.
+
+on:
+  pull_request:
+    branches: [develop, staging, main]
+
+concurrency:
+  group: validate-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint · Build · Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── EXAMPLE: a Node/TypeScript subproject. Replace with YOUR commands. ──────────
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '22'
+      #     cache: npm
+      #     cache-dependency-path: <subproject-dir>/package-lock.json
+      # - run: npm ci         # working-directory: <subproject-dir>
+      # - run: npm run lint    # working-directory: <subproject-dir>
+      # - run: npm run build   # working-directory: <subproject-dir>
+      # - run: npm test        # working-directory: <subproject-dir>
+      #
+      # ── EXAMPLE: a Flutter subproject ──────────────────────────────────────────────
+      # - uses: subosito/flutter-action@v2
+      # - run: flutter analyze   # working-directory: <subproject-dir>
+      # - run: flutter test      # working-directory: <subproject-dir>
+
+      - run: |
+          echo "TODO: replace this with your subproject's lint/build/test commands."
+          echo "See the commented examples above and your project-profile stack section."
+          exit 1

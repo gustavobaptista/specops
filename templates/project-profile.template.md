@@ -161,3 +161,24 @@ Anomaly thresholds (tune per project):
 
 ### Incident reports directory
 - `<e.g. docs/incidents/>`
+
+---
+
+## CI / Automation (optional)
+
+> How much of the squad runs **automatically in GitHub Actions** — and therefore how
+> much you spend (Actions minutes + Claude tokens). Opt-in and tiered. Default: `review`.
+> Full setup steps per level live in [`docs/ci-setup.md`](../docs/ci-setup.md).
+
+- **Automation level:** `review`   <!-- off | review | review+capture | full -->
+- **Review triggers:** base branches `[main, staging]`; skip draft PRs: `yes`; path-ignore: `[**/*.md, docs/**]`
+- **CI agent model:** `<e.g. claude-sonnet-4-6>`   <!-- cost lever: smaller = cheaper tokens -->
+- **Auto-fix (full only):** severities `[low]`; schedule `weekly`; max issues/run `3`; skip-if-idle: `yes`
+- **Timeouts:** review `10m`; fix `25m`
+
+| Level | Installs | Cost driver |
+|---|---|---|
+| `off` | nothing (run the squad locally) | zero CI cost |
+| `review` *(default)* | `reviewer.yml` | ~1 Claude run per PR push |
+| `review+capture` | + `followup-capture.yml` | +1 run per merged PR |
+| `full` | + `followup-fix.yml` | + scheduled fix runs |
