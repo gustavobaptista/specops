@@ -59,13 +59,14 @@ as a GitHub template, or copy from [`templates/`](templates/):
 ## Run a feature
 
 ```
-1. /product-discovery        # optional — generates docs/specs/<date>-<slug>/brief.md
-2. Run the feature-pipeline workflow:
-     Workflow({ name: 'feature-pipeline', args: { specDir: 'docs/specs/<date>-<slug>' } })
+/product-discovery     # optional — generates docs/specs/<date>-<slug>/brief.md
+/sdd-feature <slug>    # runs the whole pipeline for that feature
 ```
 
-The pipeline takes it from brief → merged-ready PRs, stopping only for the final
-human approval.
+`/sdd-feature` resolves the slug to its spec directory and launches the
+`feature-pipeline` workflow for you — no need to hand-write a `Workflow({...})` call.
+Pass a bare slug, a full path, or nothing (it lists features and asks). The pipeline
+takes it from brief → merged-ready PRs, stopping only for the final human approval.
 
 ## Anatomy
 
