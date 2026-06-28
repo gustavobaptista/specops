@@ -1,0 +1,18 @@
+{
+  "name": "spec-driven-squad",
+  "version": "0.1.0",
+  "description": "A stack-agnostic, multi-agent spec-driven development pipeline for Claude Code: discovery → spec → tasks → parallel implementation → QA gate → PR → automated review loop. Driven entirely by a per-project profile.",
+  "author": "Gustavo Silva",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven-development",
+    "sdd",
+    "multi-agent",
+    "workflow",
+    "orchestration",
+    "claude-code"
+  ],
+  "agents": "./agents",
+  "commands": "./commands",
+  "hooks": "./hooks"
+}

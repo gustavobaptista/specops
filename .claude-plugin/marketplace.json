@@ -1,0 +1,14 @@
+{
+  "name": "spec-driven-squad",
+  "owner": {
+    "name": "Gustavo Silva",
+    "url": "https://github.com/<your-username>"
+  },
+  "plugins": [
+    {
+      "name": "spec-driven-squad",
+      "source": "./",
+      "description": "Stack-agnostic multi-agent spec-driven development pipeline: discovery → spec → tasks → parallel implementation → QA → PR → review loop."
+    }
+  ]
+}
