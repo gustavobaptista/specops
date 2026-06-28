@@ -1,6 +1,6 @@
 # Methodology
 
-spec-driven-squad turns a fuzzy idea into merged-ready PRs through a **squad of
+SpecOps turns a fuzzy idea into merged-ready PRs through a **squad of
 specialized agents**, each a role with one job and a verifiable handoff. The names
 are personas, not phases — the slash commands (verbs) are a separate namespace.
 
@@ -95,6 +95,7 @@ via the `sync-memory` hook, so the whole team's agents benefit.
 
 ## Where this came from
 
-Extracted from **BeerXP**, a production Flutter + Firebase social app. The
-`examples/beerxp/` directory keeps the original (anonymized) constitution and a sample
-spec as a living reference of the system running on a real codebase.
+Distilled from a multi-agent setup that shipped features on a production Flutter +
+Firebase app, then generalized to be stack-agnostic. The [`examples/acme-saas/`](../examples/acme-saas/)
+directory ships a synthetic worked example (a B2B SaaS on a Node/Next.js/Postgres stack)
+to show the same squad configured for a very different stack.

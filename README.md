@@ -1,5 +1,7 @@
-# spec-driven-squad
+# SpecOps
 
+> **An autonomous squad of AI engineers — from spec to merged PR.**
+>
 > A **stack-agnostic, multi-agent spec-driven development pipeline** for [Claude Code](https://claude.com/claude-code).
 > Not just sequential slash-commands — a real orchestrated squad with parallel
 > implementation, verifiable quality gates, a QA retry loop, an automated PR-review
@@ -34,8 +36,8 @@ parts that make it hold up on real teams:
 ### As a Claude Code plugin
 
 ```
-/plugin marketplace add <your-username>/spec-driven-squad
-/plugin install spec-driven-squad
+/plugin marketplace add gustavobaptista/specops
+/plugin install specops
 ```
 
 Then, inside your target repo:
@@ -101,7 +103,7 @@ workflows/             feature-pipeline.js — the orchestrator
 commands/              /sdd-init and friends
 hooks/                 cross-platform memory sync
 templates/             what gets copied INTO your repo (profile, constitution, CI)
-examples/beerxp/       a real, anonymized project this was extracted from
+examples/acme-saas/    a worked example profile + constitution (synthetic SaaS)
 docs/                  methodology & guides
 ```
 

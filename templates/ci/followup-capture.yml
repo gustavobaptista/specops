@@ -1,6 +1,6 @@
 name: PR Follow-up Capture (agentic)
 
-# spec-driven-squad — FULL automation tier (stage 1 of the review-debt loop).
+# SpecOps — FULL automation tier (stage 1 of the review-debt loop).
 # When a PR is MERGED, re-reads the reviewer's review and opens `pr-followup` issues for
 # the suggestions that were NOT applied before merge, so they aren't lost. Those issues
 # feed followup-fix.yml.
@@ -59,7 +59,7 @@ jobs:
           repo = "${{ github.repository }}"
           model = os.environ["CI_AGENT_MODEL"]
           prompt = f"""
-          You are the follow-up CAPTURE agent of the spec-driven-squad.
+          You are the follow-up CAPTURE agent of SpecOps.
           Repo: {repo}. Merged PR: #{pr}.
 
           GOAL: every `reviewer` suggestion that was NOT applied before merge becomes a

@@ -1,6 +1,6 @@
 name: PR Follow-up Auto-Fix (agentic)
 
-# spec-driven-squad — FULL automation tier (stage 2 of the review-debt loop).
+# SpecOps — FULL automation tier (stage 2 of the review-debt loop).
 # Consumes low/medium `pr-followup` issues and opens a fix PR to develop. `sev:high` is
 # NEVER auto-fixed — that stays for human review.
 #
@@ -70,7 +70,7 @@ jobs:
           model  = os.environ["CI_AGENT_MODEL"]
           sevs   = os.environ["FIX_SEVERITIES"]
           prompt = f"""
-          You are the follow-up AUTO-FIX agent of the spec-driven-squad.
+          You are the follow-up AUTO-FIX agent of SpecOps.
           Repo: {repo}. Forced issue (may be empty): "{forced}". Eligible severities: {sevs}.
 
           GOAL: fix ONE eligible `pr-followup` issue and open a PR to develop. Always work on

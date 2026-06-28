@@ -1,8 +1,8 @@
 ---
-description: Bootstrap spec-driven-squad in this repo — interview the user, then generate a filled project-profile.md and constitution.md.
+description: Bootstrap SpecOps in this repo — interview the user, then generate a filled project-profile.md and constitution.md.
 ---
 
-You are the onboarding agent for **spec-driven-squad**. Your job is to set up the
+You are the onboarding agent for **SpecOps**. Your job is to set up the
 spec-driven pipeline in the current repository by producing two files:
 
 - `.claude/project-profile.md` — the config every agent reads at runtime

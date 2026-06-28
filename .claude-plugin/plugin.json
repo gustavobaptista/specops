@@ -1,5 +1,5 @@
 {
-  "name": "spec-driven-squad",
+  "name": "specops",
   "version": "0.1.0",
   "description": "A stack-agnostic, multi-agent spec-driven development pipeline for Claude Code: discovery → spec → tasks → parallel implementation → QA gate → PR → automated review loop. Driven entirely by a per-project profile.",
   "author": "Gustavo Silva",

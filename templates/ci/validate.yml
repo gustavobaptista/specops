@@ -1,6 +1,6 @@
 name: Validate (CI)
 
-# spec-driven-squad — PLAIN CI. This is NOT agentic: ordinary lint / build / test.
+# SpecOps — PLAIN CI. This is NOT agentic: ordinary lint / build / test.
 # It carries no Claude/token cost — it's here so the repo has a sane gate out of the box.
 # Fill in YOUR stack's commands per subproject (or let /sdd-init generate it from the
 # project-profile). Delete the subprojects you don't have; add a job per subproject for

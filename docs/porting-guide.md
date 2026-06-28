@@ -1,78 +1,58 @@
-# Porting Guide — finishing the extraction
+# Extending the squad — adding or porting your own agents
 
-The full squad has now been ported from BeerXP and is config-driven. This guide
-documents the recipe that was used — keep it as the reference for porting any
-*additional* agents into the same pattern.
+SpecOps ships a full squad (`discovery`, `architect`, `planner`, `implementer`, `qa`,
+`reviewer`, `auditor`, plus the operational `investigator` and `guardian`). If you want
+to add a new role — or bring an existing agent of your own into the same config-driven
+pattern — this is the recipe.
 
-> **Renaming map (all ported).** The squad uses a role/persona taxonomy, so each
-> BeerXP agent got a new role name:
->
-> | BeerXP name | Squad role |
-> |---|---|
-> | `product-discovery` | `discovery` |
-> | `spec-generator` | `architect` |
-> | `task-generator` | `planner` |
-> | `backend/frontend/admin-implementer` | `implementer` (one generic) |
-> | `qa-validator` | `qa` |
-> | `pr-reviewer` | `reviewer` |
-> | `security-auditor` | `auditor` |
-> | `incident-investigator` | `investigator` |
-> | `deploy-guardian` | `guardian` |
->
-> Operational agents (`investigator`, `guardian`) additionally read the profile's
-> **Operations** section and discover external integrations (observability, analytics,
-> alerting) at runtime via connected MCP servers — they carry no `mcpServers:`
-> frontmatter so the plugin stays vendor-neutral. Update the `name:` frontmatter and
-> every cross-reference. The `feature-pipeline` workflow calls the new `agentType`
-> names (`architect`, `planner`, `qa`).
+## The naming taxonomy
+
+Agents are **roles/personas** (a single noun describing *who*): `architect`, `planner`,
+`reviewer`, `auditor`… Slash commands are the separate *what-you-do* namespace
+(`/sdd-init`, `/sdd-run`). When you add an agent, give it a role name, not a phase name.
 
 ## The conversion recipe (per agent)
 
-For each agent in `BeerXP/.claude/agents/` (and the subproject implementers):
+1. **Start from the canonical shape.** Copy the structure of [`agents/architect.md`](../agents/architect.md):
+   frontmatter (`name`, `description`, `tools`, `model`, `memory`), then a mandatory
+   "Step 0 — Load project context" block, then the body.
+2. **Add Step 0 first.** It reads `.claude/project-profile.md` (stack, paths, subprojects,
+   conventions, gates) and `.claude/constitution.md` (principles) before doing anything.
+3. **Assume no stack.** Never assert a technology in the body. Wherever you'd write
+   "we use X", write "the stack/datastore/test-framework the profile declares". Concrete
+   technologies may appear only as clearly-labelled *examples* ("e.g. …") that apply when
+   the profile's stack matches.
+4. **No absolute paths.** Use profile fields: `repoRoot`, `specsDir`, `worktreeRoot`, and
+   each subproject's `dir` / `prefix` / `implementerDef`.
+5. **Keep the generic core.** Output formats, quality bars, gate definitions, and handoff
+   steps are stack-neutral — write them once, plainly.
+6. **Respond in the user's language at runtime** via the profile's `Primary language`
+   field; keep the agent file itself in English so it's contributable.
 
-1. **Copy** the agent `.md` into `agents/` here.
-2. **Add Step 0** — a "Load project context" block that reads
-   `.claude/project-profile.md` first (copy it from `architect.md`).
-3. **Strip the hardcoded stack.** Find every line that asserts a technology
-   ("Flutter 3.x", "Firestore PascalCase", "southamerica-east1", "Riverpod") and
-   replace it with a reference to the profile ("the stack the profile declares",
-   "the datastore naming the profile defines").
-4. **Remove absolute paths.** Anything like `C:/Users/Gus/BeerXP/...` becomes a
-   profile field (`repoRoot`, `specsDir`, the subproject's `dir`/`implementerDef`).
-5. **Keep the generic ~70%.** Spec format, quality bars, gate definitions, output
-   structure — these are already stack-neutral. Don't rewrite them.
-6. **Translate** user-facing wording to English (the profile's `Primary language`
-   field is what makes the agent respond in the user's language at runtime).
+## Where project-specific knowledge belongs
 
-## Agent-by-agent notes
-
-| Role (← BeerXP agent) | Specific bits to extract into the profile |
+| Kind of knowledge | Home |
 |---|---|
-| `discovery` (← product-discovery) | Product loop, business rules → these belong in the *constitution*, not the agent. The agent itself is already nearly generic. |
-| `planner` (← task-generator) | Task ID prefixes (B/F/A) → `subprojects[].prefix`. File-path conventions → per-subproject stack. |
-| `qa` (← qa-validator) | "Run locally, don't run lint/build/coverage (that's CI)" is generic. The rule-tracing logic is generic. Only test-framework names move to the profile. |
-| `reviewer` (← pr-reviewer) | Per-subproject rule sets → reference the constitution's "absolutes" + profile idioms. Diff-path → subproject detection uses `subprojects[].dir`. |
-| `auditor` (← security-auditor) | Firebase-specific checks (Security Rules, App Check) → make them conditional on the profile's datastore/stack. |
-| `implementer` (×N) | Biggest win: collapse backend/frontend/admin implementers into **one** generic implementer that reads its target subproject + stack from the profile. The pipeline already passes the right `implementerDef` path per subproject. |
+| Stack, paths, prefixes, conventions, gates | `project-profile.md` |
+| Product vision, principles, non-negotiables / "absolutes" | `constitution.md` |
+| Observability / analytics / alerting / deploy targets | profile `## Operations` |
+| How much to automate in CI (+ cost levers) | profile `## CI / Automation` |
+
+A reviewer, for example, enforces the constitution's "absolutes" + the profile's
+per-subproject idioms — it carries no hardcoded rules of its own. Operational agents
+(`investigator`, `guardian`) discover connected integrations (logs, analytics, Slack…)
+at runtime and carry **no `mcpServers:` frontmatter**, so the plugin stays vendor-neutral.
+
+## Wiring an agent into the pipeline
+
+The deterministic `feature-pipeline` workflow calls agents by `agentType` (`architect`,
+`planner`, `qa`). If you add a pipeline stage, call your new agent the same way and give
+it a phase in the workflow's `meta`. On-demand agents (like `auditor`) need no wiring —
+they're invoked directly or by `/sdd-run`.
 
 ## Validating genericity
 
-The litmus test: clone the engine into a repo with a **different stack** (e.g. a plain
-Next.js app), run `/sdd-init`, and run one feature end-to-end. If any agent assumes
-Flutter/Firebase, you missed a hardcoded line — grep for it:
-
-```
-grep -rIEi 'flutter|firebase|firestore|riverpod|southamerica|C:/Users' agents/ workflows/
-```
-
-A clean run = zero hits outside `examples/`.
-
-## CI templates (still to add)
-
-Copy and genericize from BeerXP's `.github/workflows/`:
-- `reviewer.yml` — invokes the `reviewer` agent on PR open/update.
-  (BeerXP learned: `claude-code-action@beta` broke on `pull_request` events — they call
-  the CLI directly via a Python subprocess. Port that working approach.)
-- `validate.yml` — analyze + test + diff-aware coverage gate.
-
-Drop them in `templates/ci/` so `/sdd-init` can offer to install them.
+The litmus test: configure SpecOps in a repo with a **different stack** than you developed
+against, run `/sdd-init`, and take one feature end-to-end. If any agent assumes a specific
+technology, you missed a hardcoded line — grep for the telltales of *your* original stack
+across `agents/` and `workflows/`. A clean run = zero stack assumptions outside `examples/`.

@@ -1,14 +1,14 @@
 {
-  "name": "spec-driven-squad",
+  "name": "specops",
   "owner": {
     "name": "Gustavo Silva",
-    "url": "https://github.com/<your-username>"
+    "url": "https://github.com/gustavobaptista"
   },
   "plugins": [
     {
-      "name": "spec-driven-squad",
+      "name": "specops",
       "source": "./",
-      "description": "Stack-agnostic multi-agent spec-driven development pipeline: discovery → spec → tasks → parallel implementation → QA → PR → review loop."
+      "description": "SpecOps — stack-agnostic multi-agent spec-driven development pipeline: discovery → spec → tasks → parallel implementation → QA → PR → review loop."
     }
   ]
 }

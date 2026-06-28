@@ -1,6 +1,6 @@
 name: PR Review (agentic)
 
-# spec-driven-squad — agentic PR review. Runs the `reviewer` role on each PR push and
+# SpecOps — agentic PR review. Runs the `reviewer` role on each PR push and
 # posts a structured review with a machine-readable trailer.
 # Automation level: "review" and up. Setup steps: docs/ci-setup.md.
 #
@@ -62,7 +62,7 @@ jobs:
           base = "${{ github.base_ref }}"
           model = os.environ["CI_AGENT_MODEL"]
           prompt = f"""
-          You are the `reviewer` role of the spec-driven-squad.
+          You are the `reviewer` role of SpecOps.
           Read .claude/agents/reviewer.md and follow it EXACTLY. Also read
           .claude/project-profile.md and .claude/constitution.md for this project's
           stack rules and non-negotiables.
