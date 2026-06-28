@@ -1,0 +1,47 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">SpecOps — repository map</title>
+  <desc id="d">Directory layout of SpecOps: agents (the nine roles), workflows (the orchestrator), commands, templates (including the single project-profile that drives everything), hooks, examples and docs.</desc>
+
+  <rect x="6" y="6" width="1188" height="588" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="1.5"/>
+
+  <!-- header -->
+  <text x="60" y="78" font-size="34" font-weight="800" letter-spacing="-0.5" fill="#E6EDF3">Spec<tspan fill="#58A6FF">Ops</tspan></text>
+  <text x="62" y="106" font-size="16" fill="#8B949E">Repository map — one config drives the whole squad.</text>
+
+  <!-- highlight band behind the project-profile row -->
+  <rect x="60" y="373" width="1080" height="26" rx="6" fill="#102A1B" stroke="#1F6F3F"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" xml:space="preserve">
+    <!-- root -->
+    <text x="70" y="156"><tspan fill="#58A6FF">specops/</tspan><tspan x="540" fill="#8B949E">Claude Code plugin · MIT</tspan></text>
+
+    <!-- agents -->
+    <text x="70" y="182"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">agents/</tspan><tspan x="540" fill="#8B949E">the squad — one role per file</tspan></text>
+    <text x="70" y="208"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">discovery · architect · planner</tspan><tspan x="540" fill="#8B949E">brief → spec → tasks</tspan></text>
+    <text x="70" y="234"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">implementer · qa · reviewer</tspan><tspan x="540" fill="#8B949E">build (×N) → gate → PR review</tspan></text>
+    <text x="70" y="260"><tspan fill="#484F58">│   └── </tspan><tspan fill="#C9D1D9">auditor · investigator · guardian</tspan><tspan x="540" fill="#8B949E">security · incidents · deploy</tspan></text>
+
+    <!-- workflows -->
+    <text x="70" y="286"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">workflows/</tspan><tspan x="540" fill="#8B949E">deterministic orchestrator</tspan></text>
+    <text x="70" y="312"><tspan fill="#484F58">│   └── </tspan><tspan fill="#C9D1D9">feature-pipeline.js</tspan><tspan x="540" fill="#8B949E">gates · QA retry · review loop</tspan></text>
+
+    <!-- commands -->
+    <text x="70" y="338"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">commands/</tspan><tspan x="540" fill="#8B949E">/sdd-init · /sdd-run · /sdd-feature</tspan></text>
+
+    <!-- templates -->
+    <text x="70" y="364"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">templates/</tspan><tspan x="540" fill="#C9D1D9">copied into your repo</tspan></text>
+    <text x="70" y="390"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#E6EDF3" font-weight="700">project-profile.md</tspan><tspan x="540" fill="#3FB950" font-weight="700">← the one config that drives it all</tspan></text>
+    <text x="70" y="416"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">constitution.md</tspan><tspan x="540" fill="#8B949E">principles &amp; non-negotiables</tspan></text>
+    <text x="70" y="442"><tspan fill="#484F58">│   └── </tspan><tspan fill="#58A6FF">ci/</tspan><tspan x="540" fill="#8B949E">reviewer · followup · validate</tspan></text>
+
+    <!-- hooks / examples / docs -->
+    <text x="70" y="468"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">hooks/</tspan><tspan x="540" fill="#8B949E">cross-platform memory sync</tspan></text>
+    <text x="70" y="494"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">examples/acme-saas/</tspan><tspan x="540" fill="#8B949E">a worked profile (different stack)</tspan></text>
+    <text x="70" y="520"><tspan fill="#484F58">└── </tspan><tspan fill="#58A6FF">docs/</tspan><tspan x="540" fill="#8B949E">methodology · ci-setup · extending</tspan></text>
+  </g>
+
+  <!-- footer -->
+  <line x1="60" y1="548" x2="1140" y2="548" stroke="#21262D"/>
+  <text x="60" y="572" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#8B949E">github.com/gustavobaptista/specops</text>
+  <text x="1140" y="572" font-size="13" fill="#8B949E" text-anchor="end">9 agents · 3 ways to run · tiered CI · zero stack assumptions</text>
+</svg>

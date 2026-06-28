@@ -1,16 +1,15 @@
 # SpecOps
 
+<p align="center">
+  <img src="assets/hero.svg" alt="SpecOps — an autonomous squad of AI engineers: discovery → architect → planner → implementer ×N → qa → reviewer → merged PR, with an automatic QA and review loop" width="900">
+</p>
+
 > **An autonomous squad of AI engineers — from spec to merged PR.**
 >
 > A **stack-agnostic, multi-agent spec-driven development pipeline** for [Claude Code](https://claude.com/claude-code).
 > Not just sequential slash-commands — a real orchestrated squad with parallel
 > implementation, verifiable quality gates, a QA retry loop, an automated PR-review
 > loop, and persistent per-agent memory.
-
-```
-discovery → architect → planner → implementers (parallel) → qa → PRs → reviewer loop
- brief.md     spec.md     tasks.md    one per subproject       gate         auto-fix (retry)
-```
 
 Everything that is project-specific — your stack, paths, naming, branches, gates —
 lives in **one file**: [`.claude/project-profile.md`](templates/project-profile.template.md).
@@ -94,18 +93,11 @@ the slug so you never hand-write that call.
 All three start from `/discovery` (optional — generates the `brief.md`) and end
 at merged-ready PRs, stopping only for the final human approval.
 
-## Anatomy
+## How it's organized
 
-```
-.claude-plugin/        plugin.json + marketplace.json
-agents/                stack-agnostic process agents (read the profile at runtime)
-workflows/             feature-pipeline.js — the orchestrator
-commands/              /sdd-init and friends
-hooks/                 cross-platform memory sync
-templates/             what gets copied INTO your repo (profile, constitution, CI)
-examples/acme-saas/    a worked example profile + constitution (synthetic SaaS)
-docs/                  methodology & guides
-```
+<p align="center">
+  <img src="assets/structure.svg" alt="SpecOps repository map: agents/ (the nine roles), workflows/ (the orchestrator), commands/, templates/ with the single project-profile.md that drives everything, hooks/, examples/acme-saas/, and docs/" width="900">
+</p>
 
 See [`docs/methodology.md`](docs/methodology.md) for the philosophy and
 [`docs/anatomy-of-an-agent.md`](docs/anatomy-of-an-agent.md) for how to write your own.
