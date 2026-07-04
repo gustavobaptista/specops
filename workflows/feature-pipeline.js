@@ -1,10 +1,11 @@
 export const meta = {
   name: 'feature-pipeline',
-  description: 'Stack-agnostic feature pipeline: profile → spec → tasks → parallel impl → QA → PRs → review loop',
+  description: 'Stack-agnostic feature pipeline: profile → spec → design → tasks → parallel impl → QA → PRs → review loop',
   phases: [
     { title: 'Profile',        detail: 'Read project-profile.md → resolve subprojects, paths, prefixes' },
     { title: 'Preflight',      detail: 'Inspect current state of spec & tasks' },
     { title: 'Spec',           detail: 'Generate or validate spec.md' },
+    { title: 'Design',         detail: 'ui-designer → ui-spec.md (UI features only)' },
     { title: 'Tasks',          detail: 'Generate or validate tasks.md and detect subprojects' },
     { title: 'Implementation', detail: 'Implementers run in parallel (one per subproject)' },
     { title: 'QA',             detail: 'Validate business rules (up to 2 attempts)' },
@@ -149,6 +150,19 @@ Respond only with JSON.
   }
   log('✅ spec.md generated and validated')
 }
+
+// ─── GATE 2.5 — Design (UI features only) ────────────────────────────────────────
+// ui-designer turns spec.md into ui-spec.md for features that have a UI surface. It
+// self-skips backend-only features. Non-fatal: a missing ui-spec never blocks the run.
+phase('Design')
+const design = await agent(
+  `Read ${specDir}/spec.md and the project profile. If this feature touches any UI ` +
+  `surface (a subproject the profile marks as frontend/UI), produce ${specDir}/ui-spec.md ` +
+  `following your role. If it is backend-only, do nothing and say so. If ` +
+  `${specDir}/ui-spec.md already exists and is complete, leave it untouched.`,
+  { label: 'ui-designer', phase: 'Design', agentType: 'ui-designer' }
+)
+log(design ? '✅ Design step done (ui-spec.md produced when UI is involved)' : '⚠️ ui-designer skipped — continuing')
 
 // ─── GATE 3 — Tasks ──────────────────────────────────────────────────────────────
 let subprojects = (preflight.subprojects || []).filter(k => ALL_KEYS.includes(k))

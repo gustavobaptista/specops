@@ -17,8 +17,8 @@
 
     <!-- agents -->
     <text x="70" y="182"><tspan fill="#484F58">├── </tspan><tspan fill="#58A6FF">agents/</tspan><tspan x="540" fill="#8B949E">the squad — one role per file</tspan></text>
-    <text x="70" y="208"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">discovery · architect · planner</tspan><tspan x="540" fill="#8B949E">brief → spec → tasks</tspan></text>
-    <text x="70" y="234"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">implementer · qa · reviewer</tspan><tspan x="540" fill="#8B949E">build (×N) → gate → PR review</tspan></text>
+    <text x="70" y="208"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">discovery · architect · ui-designer</tspan><tspan x="540" fill="#8B949E">brief → spec → design</tspan></text>
+    <text x="70" y="234"><tspan fill="#484F58">│   ├── </tspan><tspan fill="#C9D1D9">planner · implementer · qa · reviewer</tspan><tspan x="540" fill="#8B949E">tasks → build ×N → gate → PR</tspan></text>
     <text x="70" y="260"><tspan fill="#484F58">│   └── </tspan><tspan fill="#C9D1D9">auditor · investigator · guardian</tspan><tspan x="540" fill="#8B949E">security · incidents · deploy</tspan></text>
 
     <!-- workflows -->
@@ -43,5 +43,5 @@
   <!-- footer -->
   <line x1="60" y1="548" x2="1140" y2="548" stroke="#21262D"/>
   <text x="60" y="572" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#8B949E">github.com/gustavobaptista/specops</text>
-  <text x="1140" y="572" font-size="13" fill="#8B949E" text-anchor="end">9 agents · 3 ways to run · tiered CI · zero stack assumptions</text>
+  <text x="1140" y="572" font-size="13" fill="#8B949E" text-anchor="end">10 agents · 3 ways to run · tiered CI · zero stack assumptions</text>
 </svg>

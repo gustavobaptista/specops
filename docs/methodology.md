@@ -10,6 +10,7 @@ are personas, not phases — the slash commands (verbs) are a separate namespace
 |---|---|---|
 | **discovery** | interviews the PO in business language | `brief.md` |
 | **architect** | designs the technical spec | `spec.md` |
+| **ui-designer** | designs the UI contract *(UI features only)* | `ui-spec.md` |
 | **planner** | breaks the spec into atomic tasks | `tasks.md` |
 | **implementer** (×N) | builds one subproject | code + tests |
 | **qa** | validates every business rule has impl + test | gate verdict |
@@ -21,18 +22,22 @@ are personas, not phases — the slash commands (verbs) are a separate namespace
    still fuzzy. Skip it when they're clear and start at the architect.
 2. **architect** — translates the brief into a technical `spec.md`: overview,
    scope, user flow, architecture, API contracts, security. The *what & why*, not tasks.
-3. **planner** — breaks the spec into atomic, traceable `tasks.md` entries with
+3. **ui-designer** *(UI features only)* — turns the spec into a `ui-spec.md`: visual
+   hierarchy, screen states (loading/empty/error/populated), a low-fi wireframe, applied
+   design-system tokens, and a verifiable visual acceptance checklist. Backend-only
+   features skip it and go straight to the planner.
+4. **planner** — breaks the spec into atomic, traceable `tasks.md` entries with
    IDs (prefix per subproject), `[P]` parallelism markers, concrete file paths, and
    explicit dependencies.
-4. **implementers** (parallel) — one per subproject, each isolated in its own git
+5. **implementers** (parallel) — one per subproject, each isolated in its own git
    worktree. They mark task status (⬜ → 🔄 → ✅) so the pipeline can resume.
-5. **qa** — the gate. Traces every business rule in the spec to its implementation
-   *and* a behavior test. Rejections bounce back to only the affected implementer,
-   with the exact gap.
-6. **reviewer** — runs automatically on each PR (GitHub Action). Detects the
+6. **qa** — the gate. Traces every business rule in the spec to its implementation
+   *and* a behavior test (and the ui-spec's checklist for UI features). Rejections
+   bounce back to only the affected implementer, with the exact gap.
+7. **reviewer** — runs automatically on each PR (GitHub Action). Detects the
    subproject from the diff, applies that subproject's rules, and posts a structured
    review with machine-readable blockers.
-7. **review loop** — the orchestrator reads the review, dispatches surgical fixes to
+8. **review loop** — the orchestrator reads the review, dispatches surgical fixes to
    the existing branch, and re-checks — up to N cycles.
 
 ## Operational roles (outside the linear chain)

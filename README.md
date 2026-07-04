@@ -1,7 +1,7 @@
 # SpecOps
 
 <p align="center">
-  <img src="assets/hero.svg" alt="SpecOps — an autonomous squad of AI engineers: discovery → architect → planner → implementer ×N → qa → reviewer → merged PR, with an automatic QA and review loop" width="900">
+  <img src="assets/hero.svg" alt="SpecOps — an autonomous squad of AI engineers: discovery → architect → ui-designer (for UI features) → planner → implementer ×N → qa → reviewer → merged PR, with an automatic QA and review loop" width="900">
 </p>
 
 > **An autonomous squad of AI engineers — from spec to merged PR.**
@@ -107,7 +107,7 @@ See [`docs/methodology.md`](docs/methodology.md) for the philosophy and
 `v0.1.0`. The full squad is ported and config-driven — each agent reads the project
 profile at runtime and assumes no stack:
 
-- **Build pipeline:** `discovery` → `architect` → `planner` → `implementer` → `qa` → `reviewer`, orchestrated by the `feature-pipeline` workflow.
+- **Build pipeline:** `discovery` → `architect` → `ui-designer` *(UI features)* → `planner` → `implementer` → `qa` → `reviewer`, orchestrated by the `feature-pipeline` workflow.
 - **Operational roles** (on demand): `auditor` (security), `investigator` (incident root-cause, read-only), `guardian` (deploy watch + auto-rollback).
 - **CI automation** (opt-in, tiered): run the `reviewer` (and optionally a capture + auto-fix loop) in GitHub Actions. Default level `review`. See [`docs/ci-setup.md`](docs/ci-setup.md).
 
